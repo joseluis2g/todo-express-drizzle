@@ -1,0 +1,53 @@
+{
+    "name": "todo-express-drizzle",
+    "version": "1.0.0",
+    "description": "API de TODO en tiempo real con soporte WebSocket usando Node.js, Express 5, Drizzle ORM, SQLite y Socket.IO",
+    "main": "src/index.ts",
+    "type": "module",
+    "scripts": {
+        "dev": "tsx src/index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "db:push": "drizzle-kit push",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "format": "prettier --write ."
+    },
+    "keywords": [
+        "todo",
+        "api",
+        "tiempo-real",
+        "websocket",
+        "express",
+        "drizzle",
+        "sqlite",
+        "nodejs",
+        "tareas",
+        "gestion"
+    ],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "@libsql/client": "^0.15.15",
+        "dotenv": "^16.6.1",
+        "drizzle-orm": "^0.36.4",
+        "express": "^5.1.0",
+        "express-validator": "^7.0.1",
+        "morgan": "^1.10.0",
+        "socket.io": "^4.8.1",
+        "swagger-ui-express": "^5.0.0"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.3",
+        "@types/morgan": "^1.9.10",
+        "@types/node": "^22.18.7",
+        "@types/swagger-ui-express": "^4.1.8",
+        "drizzle-kit": "^0.30.6",
+        "prettier": "^3.1.1",
+        "tsx": "^4.20.6",
+        "typescript": "^5.9.2"
+    },
+    "engines": {
+        "node": ">=20.0.0"
+    }
+}

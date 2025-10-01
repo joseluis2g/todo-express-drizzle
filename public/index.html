@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TODO Real-time API - Frontend (Drizzle)</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .content {
+        padding: 30px;
+      }
+
+      .form-section {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #4facfe;
+      }
+
+      button {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .tasks-section h2 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .task-item {
+        background: white;
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: all 0.3s;
+      }
+
+      .task-item:hover {
+        border-color: #4facfe;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .task-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .task-status {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .status-pendiente {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .status-completada {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-en_progreso {
+        background: #cce5ff;
+        color: #004085;
+      }
+
+      .task-description {
+        color: #666;
+        margin-bottom: 15px;
+        line-height: 1.5;
+      }
+
+      .task-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn-update {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
+      .btn-delete {
+        background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
+      .connection-status {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        z-index: 1000;
+      }
+
+      .connected {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .disconnected {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+      }
+
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .success {
+        background: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          margin: 10px;
+          border-radius: 10px;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .content {
+          padding: 20px;
+        }
+
+        .task-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .task-actions {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="connection-status" id="connectionStatus">Conectando...</div>
+
+    <div class="container">
+      <div class="header">
+        <h1>TODO Real-time (Drizzle)</h1>
+        <p>Gestión de tareas en tiempo real con WebSocket y Drizzle ORM</p>
+      </div>
+
+      <div class="content">
+        <div class="form-section">
+          <h2>Nueva Tarea</h2>
+          <form id="taskForm">
+            <div class="form-group">
+              <label for="titulo">Título *</label>
+              <input
+                type="text"
+                id="titulo"
+                name="titulo"
+                required
+                maxlength="100"
+                placeholder="Ingresa el título de la tarea"
+              />
+            </div>
+            <div class="form-group">
+              <label for="descripcion">Descripción</label>
+              <textarea
+                id="descripcion"
+                name="descripcion"
+                maxlength="500"
+                rows="3"
+                placeholder="Descripción opcional de la tarea"
+              ></textarea>
+            </div>
+            <button type="submit" id="submitBtn">Crear Tarea</button>
+          </form>
+        </div>
+
+        <div class="tasks-section">
+          <h2>Lista de Tareas</h2>
+          <div id="tasksList" class="loading">Cargando tareas...</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // WebSocket connection
+      const socket = io();
+      const connectionStatus = document.getElementById('connectionStatus');
+      const tasksList = document.getElementById('tasksList');
+      const taskForm = document.getElementById('taskForm');
+      const submitBtn = document.getElementById('submitBtn');
+
+      // Connection status
+      socket.on('connect', () => {
+        connectionStatus.textContent = 'Conectado';
+        connectionStatus.className = 'connection-status connected';
+        loadTasks();
+      });
+
+      socket.on('disconnect', () => {
+        connectionStatus.textContent = 'Desconectado';
+        connectionStatus.className = 'connection-status disconnected';
+      });
+
+      socket.on('connected', data => {
+        console.log('WebSocket connected:', data);
+      });
+
+      // WebSocket events
+      socket.on('newTask', task => {
+        console.log('New task received:', task);
+        loadTasks();
+        showMessage('Nueva tarea creada: ' + task.titulo, 'success');
+      });
+
+      socket.on('taskUpdated', data => {
+        console.log('Task updated:', data);
+        loadTasks();
+        showMessage('Tarea actualizada', 'success');
+      });
+
+      socket.on('taskDeleted', data => {
+        console.log('Task deleted:', data);
+        loadTasks();
+        showMessage('Tarea eliminada', 'success');
+      });
+
+      // Load tasks from API
+      async function loadTasks() {
+        try {
+          const response = await fetch('/tasks');
+          if (!response.ok) {
+            throw new Error('Error al cargar las tareas');
+          }
+          const tasks = await response.json();
+          renderTasks(tasks);
+        } catch (error) {
+          console.error('Error loading tasks:', error);
+          tasksList.innerHTML =
+            '<div class="error">Error al cargar las tareas: ' +
+            error.message +
+            '</div>';
+        }
+      }
+
+      // Render tasks
+      function renderTasks(tasks) {
+        if (tasks.length === 0) {
+          tasksList.innerHTML =
+            '<div class="loading">No hay tareas disponibles</div>';
+          return;
+        }
+
+        tasksList.innerHTML = tasks
+          .map(
+            task => `
+                <div class="task-item" data-id="${task.id}">
+                    <div class="task-header">
+                        <div class="task-title">${escapeHtml(task.titulo)}</div>
+                        <div class="task-status status-${task.status}">${task.status}</div>
+                    </div>
+                    ${task.descripcion ? `<div class="task-description">${escapeHtml(task.descripcion)}</div>` : ''}
+                    <div class="task-actions">
+                        <button class="btn-update" onclick="updateTaskStatus(${task.id}, '${getNextStatus(task.status)}')">
+                            ${getStatusText(task.status)}
+                        </button>
+                        <button class="btn-delete" onclick="deleteTask(${task.id})">
+                            Eliminar
+                        </button>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #999; margin-top: 10px;">
+                        Creada: ${new Date(task.fechaCreacion).toLocaleString()}
+                        ${
+                          task.fechaActualizacion !== task.fechaCreacion
+                            ? ` | Actualizada: ${new Date(task.fechaActualizacion).toLocaleString()}`
+                            : ''
+                        }
+                    </div>
+                </div>
+            `
+          )
+          .join('');
+      }
+
+      // Get next status in cycle
+      function getNextStatus(currentStatus) {
+        const statuses = ['pendiente', 'en_progreso', 'completada'];
+        const currentIndex = statuses.indexOf(currentStatus);
+        return statuses[(currentIndex + 1) % statuses.length];
+      }
+
+      // Get status text for display
+      function getStatusText(status) {
+        const statusTexts = {
+          'pendiente': 'En Progreso',
+          'en_progreso': 'Completar',
+          'completada': 'Revertir'
+        };
+        return statusTexts[status] || status;
+      }
+
+      // Create new task
+      taskForm.addEventListener('submit', async e => {
+        e.preventDefault();
+
+        const formData = new FormData(taskForm);
+        const titulo = formData.get('titulo').trim();
+        const descripcion = formData.get('descripcion').trim();
+
+        if (!titulo) {
+          showMessage('El título es requerido', 'error');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creando...';
+
+        try {
+          const response = await fetch('/tasks', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              titulo,
+              descripcion: descripcion || null
+            })
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error?.message || 'Error al crear la tarea');
+          }
+
+          const task = await response.json();
+          taskForm.reset();
+          showMessage('Tarea creada exitosamente', 'success');
+        } catch (error) {
+          console.error('Error creating task:', error);
+          showMessage('Error al crear la tarea: ' + error.message, 'error');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Crear Tarea';
+        }
+      });
+
+      // Update task status
+      async function updateTaskStatus(id, newStatus) {
+        try {
+          const response = await fetch(`/tasks/${id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: newStatus })
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(
+              error.error?.message || 'Error al actualizar la tarea'
+            );
+          }
+        } catch (error) {
+          console.error('Error updating task:', error);
+          showMessage(
+            'Error al actualizar la tarea: ' + error.message,
+            'error'
+          );
+        }
+      }
+
+      // Delete task
+      async function deleteTask(id) {
+        if (!confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`/tasks/${id}`, {
+            method: 'DELETE'
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(
+              error.error?.message || 'Error al eliminar la tarea'
+            );
+          }
+        } catch (error) {
+          console.error('Error deleting task:', error);
+          showMessage('Error al eliminar la tarea: ' + error.message, 'error');
+        }
+      }
+
+      // Utility functions
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function showMessage(message, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = type;
+        messageDiv.textContent = message;
+
+        const content = document.querySelector('.content');
+        content.insertBefore(messageDiv, content.firstChild);
+
+        setTimeout(() => {
+          messageDiv.remove();
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>

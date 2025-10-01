@@ -1,0 +1,448 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API TODO en Tiempo Real (Drizzle ORM)",
+        "description": "API de gestión de tareas en tiempo real con soporte WebSocket usando Node.js, Express, Drizzle ORM, SQLite y Socket.IO",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Soporte API"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Servidor de desarrollo"
+        }
+    ],
+    "paths": {
+        "/tasks": {
+            "get": {
+                "summary": "Obtener todas las tareas",
+                "description": "Obtiene todas las tareas ordenadas por fecha de creación (más recientes primero)",
+                "tags": [
+                    "Tareas"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de tareas obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Task"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Crear una nueva tarea",
+                "description": "Crea una nueva tarea con título y descripción opcional",
+                "tags": [
+                    "Tareas"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTaskRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tarea creada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Task"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tasks/{id}": {
+            "get": {
+                "summary": "Obtener tarea por ID",
+                "description": "Obtiene una tarea específica por su ID",
+                "tags": [
+                    "Tareas"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID de la tarea",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tarea encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Task"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ID de tarea inválido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tarea no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Actualizar estado de tarea",
+                "description": "Actualiza el estado de una tarea específica",
+                "tags": [
+                    "Tareas"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID de la tarea",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTaskRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tarea actualizada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Task"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tarea no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Eliminar tarea",
+                "description": "Elimina una tarea específica por su ID",
+                "tags": [
+                    "Tareas"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID de la tarea",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Tarea eliminada exitosamente"
+                    },
+                    "400": {
+                        "description": "ID de tarea inválido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tarea no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "summary": "Verificación de salud",
+                "description": "Verifica si la API está funcionando",
+                "tags": [
+                    "Salud"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "API funcionando correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Task": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "Identificador único de la tarea",
+                        "example": 1
+                    },
+                    "titulo": {
+                        "type": "string",
+                        "description": "Título de la tarea",
+                        "maxLength": 100,
+                        "example": "Completar documentación del proyecto"
+                    },
+                    "descripcion": {
+                        "type": "string",
+                        "description": "Descripción de la tarea",
+                        "maxLength": 500,
+                        "nullable": true,
+                        "example": "Escribir documentación completa para el proyecto API TODO"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Estado de la tarea",
+                        "enum": [
+                            "pendiente",
+                            "en_progreso",
+                            "completada"
+                        ],
+                        "example": "pendiente"
+                    },
+                    "fechaCreacion": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Fecha y hora de creación de la tarea",
+                        "example": "2024-01-15T10:30:00.000Z"
+                    },
+                    "fechaActualizacion": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Fecha y hora de última actualización de la tarea",
+                        "example": "2024-01-15T10:30:00.000Z"
+                    }
+                },
+                "required": [
+                    "id",
+                    "titulo",
+                    "status",
+                    "fechaCreacion",
+                    "fechaActualizacion"
+                ]
+            },
+            "CreateTaskRequest": {
+                "type": "object",
+                "properties": {
+                    "titulo": {
+                        "type": "string",
+                        "description": "Título de la tarea",
+                        "maxLength": 100,
+                        "example": "Completar documentación del proyecto"
+                    },
+                    "descripcion": {
+                        "type": "string",
+                        "description": "Descripción de la tarea",
+                        "maxLength": 500,
+                        "example": "Escribir documentación completa para el proyecto API TODO"
+                    }
+                },
+                "required": [
+                    "titulo"
+                ]
+            },
+            "UpdateTaskRequest": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "description": "Nuevo estado de la tarea",
+                        "enum": [
+                            "pendiente",
+                            "en_progreso",
+                            "completada"
+                        ],
+                        "example": "completada"
+                    }
+                },
+                "required": [
+                    "status"
+                ]
+            },
+            "Error": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string",
+                                "description": "Mensaje de error",
+                                "example": "Error de Validación"
+                            },
+                            "details": {
+                                "type": "string",
+                                "description": "Detalles adicionales del error",
+                                "example": "El título es obligatorio"
+                            }
+                        },
+                        "required": [
+                            "message"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Tareas",
+            "description": "Operaciones de gestión de tareas"
+        },
+        {
+            "name": "Salud",
+            "description": "Operaciones de verificación de salud"
+        }
+    ]
+}
