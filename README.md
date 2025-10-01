@@ -203,7 +203,6 @@ todo-express-drizzle/
 │   ├── config/
 │   │   └── db.ts             # Configuración de base de datos
 │   ├── db/
-│   │   ├── index.ts          # Configuración Drizzle
 │   │   └── schema.ts         # Esquema de la base de datos
 │   ├── routes/
 │   │   └── tasks.routes.ts   # Rutas de tareas
@@ -214,7 +213,6 @@ todo-express-drizzle/
 │   ├── sockets/
 │   │   └── io.ts             # Configuración Socket.IO
 │   ├── middlewares/
-│   │   ├── errorHandler.ts   # Manejo de errores
 │   │   └── validators.ts     # Validaciones
 │   └── docs/
 │       └── openapi.json      # Documentación Swagger
@@ -225,8 +223,7 @@ todo-express-drizzle/
 │   └── meta/
 │       ├── _journal.json
 │       └── 0000_snapshot.json
-├── .env.example              # Variables de entorno ejemplo
-├── .gitignore
+├── env.example               # Variables de entorno ejemplo
 ├── package.json
 ├── tsconfig.json
 ├── drizzle.config.ts
