@@ -324,14 +324,6 @@ Esta versión utiliza **Drizzle ORM** en lugar de SQLite nativo, lo que proporci
 - **Mejor integración** con TypeScript
 - **Validación de esquemas** en tiempo de compilación
 
-## Instrucciones de Entrega
-
-Para entregar esta prueba:
-
-1. **Zipear el proyecto** completo
-2. **Incluir README** con instrucciones de instalación
-3. **Documentar** las decisiones técnicas tomadas
-4. **Probar** que funcione correctamente con `npm run dev`
 
 ## Consideraciones Técnicas
 
